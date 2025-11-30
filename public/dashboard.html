@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Dashboard - Roles</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="min-h-screen bg-slate-100">
+  <nav class="bg-white shadow p-4 flex justify-between items-center">
+    <h1 class="font-semibold text-lg">Panel de Roles</h1>
+    <div>
+      <span id="userEmail" class="text-sm text-slate-600 mr-4"></span>
+      <button
+        id="logoutBtn"
+        class="text-sm text-red-600 underline"
+      >Cerrar sesión</button>
+    </div>
+  </nav>
+
+  <main class="max-w-3xl mx-auto mt-8 bg-white rounded-xl shadow p-6">
+    <h2 class="text-xl font-semibold mb-4">Roles registrados</h2>
+    <p id="error" class="text-red-500 text-sm mb-2 hidden"></p>
+    <ul id="rolesList" class="space-y-2"></ul>
+  </main>
+
+  <script src="/js/dashboard.js"></script>
+</body>
+</html>

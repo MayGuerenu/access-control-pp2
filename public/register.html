@@ -2,14 +2,21 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <title>Login - Access Control</title>
+  <title>Registro - Access Control</title>
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="min-h-screen flex items-center justify-center bg-slate-100">
   <div class="bg-white rounded-xl shadow p-6 w-full max-w-sm">
-    <h1 class="text-xl font-semibold mb-4 text-center">Iniciar sesión</h1>
+    <h1 class="text-xl font-semibold mb-4 text-center">Crear cuenta</h1>
 
-    <form id="loginForm" class="space-y-3">
+    <form id="registerForm" class="space-y-3">
+      <input
+        class="w-full border rounded px-3 py-2"
+        type="text"
+        id="user"
+        placeholder="Nombre"
+        required
+      />
       <input
         class="w-full border rounded px-3 py-2"
         type="email"
@@ -21,26 +28,25 @@
         class="w-full border rounded px-3 py-2"
         type="password"
         id="password"
-        placeholder="Contraseña"
+        placeholder="Contraseña (mínimo 6 caracteres)"
         required
       />
       <button
-        class="w-full bg-blue-600 text-white rounded py-2 hover:bg-blue-700 transition"
+        class="w-full bg-emerald-600 text-white rounded py-2 hover:bg-emerald-700 transition"
         type="submit"
       >
-        Ingresar
+        Registrarme
       </button>
     </form>
 
-    <p id="error" class="text-red-500 text-sm mt-2 hidden"></p>
+    <p id="message" class="text-sm mt-3 hidden"></p>
 
     <p class="mt-4 text-sm text-center">
-      ¿No tenés cuenta?
-      <a href="/register.html" class="text-blue-600 underline">Registrate</a>
-      <!-- register.html lo dejamos para después -->
+      ¿Ya tenés cuenta?
+      <a href="/login.html" class="text-blue-600 underline">Iniciar sesión</a>
     </p>
   </div>
 
-  <script src="/js/login.js"></script>
+  <script src="/js/register.js"></script>
 </body>
 </html>
