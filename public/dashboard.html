@@ -17,10 +17,59 @@
     </div>
   </nav>
 
-  <main class="max-w-3xl mx-auto mt-8 bg-white rounded-xl shadow p-6">
-    <h2 class="text-xl font-semibold mb-4">Roles registrados</h2>
-    <p id="error" class="text-red-500 text-sm mb-2 hidden"></p>
-    <ul id="rolesList" class="space-y-2"></ul>
+  <main class="max-w-4xl mx-auto mt-8 space-y-6">
+    <!-- Crear rol -->
+    <section class="bg-white rounded-xl shadow p-6">
+      <h2 class="text-lg font-semibold mb-3">Crear nuevo rol</h2>
+      <form id="createRoleForm" class="flex gap-3 flex-wrap items-center">
+        <input
+          type="text"
+          id="newRoleName"
+          placeholder="Nombre del rol"
+          class="border rounded px-3 py-2 flex-1 min-w-[200px]"
+          required
+        />
+        <button
+          type="submit"
+          class="bg-emerald-600 text-white rounded px-4 py-2 hover:bg-emerald-700 transition"
+        >
+          Crear
+        </button>
+      </form>
+      <p id="createRoleMsg" class="text-sm mt-2 hidden"></p>
+    </section>
+
+    <!-- Editar rol -->
+    <section class="bg-white rounded-xl shadow p-6">
+      <h2 class="text-lg font-semibold mb-3">Editar rol</h2>
+      <form id="editRoleForm" class="flex gap-3 flex-wrap items-center">
+        <input type="hidden" id="editRoleId" />
+        <input
+          type="text"
+          id="editRoleName"
+          placeholder="Seleccioná un rol para editar"
+          class="border rounded px-3 py-2 flex-1 min-w-[200px]"
+          required
+        />
+        <button
+          type="submit"
+          class="bg-blue-600 text-white rounded px-4 py-2 hover:bg-blue-700 transition"
+        >
+          Guardar cambios
+        </button>
+      </form>
+      <p class="text-xs text-slate-500 mt-1">
+        Tip: hacé clic en "Editar" en la lista para completar estos campos.
+      </p>
+      <p id="editRoleMsg" class="text-sm mt-2 hidden"></p>
+    </section>
+
+    <!-- Listado de roles -->
+    <section class="bg-white rounded-xl shadow p-6">
+      <h2 class="text-lg font-semibold mb-4">Roles registrados</h2>
+      <p id="error" class="text-red-500 text-sm mb-2 hidden"></p>
+      <ul id="rolesList" class="space-y-2"></ul>
+    </section>
   </main>
 
   <script src="/js/dashboard.js"></script>
