@@ -70,6 +70,31 @@
       <p id="error" class="text-red-500 text-sm mb-2 hidden"></p>
       <ul id="rolesList" class="space-y-2"></ul>
     </section>
+
+<!-- Permisos -->
+    <section class="bg-white rounded-xl shadow p-6">
+      <h2 class="text-lg font-semibold mb-3">Permisos</h2>
+
+      <form id="createPermissionForm" class="flex gap-3 flex-wrap items-center mb-4">
+        <input
+          type="text"
+          id="newPermissionName"
+          placeholder="Nombre del permiso (ej: ver_usuarios)"
+          class="border rounded px-3 py-2 flex-1 min-w-[200px]"
+          required
+        />
+        <button
+          type="submit"
+          class="bg-emerald-600 text-white rounded px-4 py-2 hover:bg-emerald-700 transition"
+        >
+          Crear permiso
+        </button>
+      </form>
+
+      <p id="createPermissionMsg" class="text-sm mb-3 hidden"></p>
+
+      <ul id="permissionsList" class="space-y-2"></ul>
+    </section>
   </main>
 
   <script src="/js/dashboard.js"></script>

@@ -1,4 +1,7 @@
 // public/js/dashboard.js
+// ------- REFERENCIAS A ELEMENTOS DEL DOM -------
+
+// Roles
 const rolesList = document.getElementById('rolesList');
 const errorEl = document.getElementById('error');
 const userEmailEl = document.getElementById('userEmail');
@@ -12,6 +15,14 @@ const editRoleForm = document.getElementById('editRoleForm');
 const editRoleIdInput = document.getElementById('editRoleId');
 const editRoleNameInput = document.getElementById('editRoleName');
 const editRoleMsg = document.getElementById('editRoleMsg');
+
+// Permisos
+const permissionsList = document.getElementById('permissionsList');
+const createPermissionForm = document.getElementById('createPermissionForm');
+const newPermissionNameInput = document.getElementById('newPermissionName');
+const createPermissionMsg = document.getElementById('createPermissionMsg');
+
+// ------- TOKEN Y EMAIL DEL USUARIO -------
 
 const token = localStorage.getItem('token');
 const userEmail = localStorage.getItem('userEmail');
@@ -32,6 +43,8 @@ logoutBtn.addEventListener('click', () => {
   localStorage.removeItem('userEmail');
   window.location.href = '/login.html';
 });
+
+// ------- ROLES: CARGAR, CREAR, EDITAR, ELIMINAR -------
 
 async function cargarRoles() {
   try {
@@ -208,5 +221,112 @@ async function eliminarRol(id, name) {
   }
 }
 
-// Cargar roles al iniciar
+// ------- PERMISOS: CARGAR, CREAR, ELIMINAR -------
+
+async function cargarPermisos() {
+  try {
+    const res = await fetch('/api/permissions', {
+      headers: {
+        Authorization: 'Bearer ' + token
+      }
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      throw new Error(data.error || 'No se pudieron cargar los permisos');
+    }
+
+    permissionsList.innerHTML = '';
+
+    data.forEach((permiso) => {
+      const li = document.createElement('li');
+      li.className = 'border rounded px-3 py-2 flex justify-between items-center';
+
+      const left = document.createElement('span');
+      left.textContent = permiso.nombre;
+
+      const deleteBtn = document.createElement('button');
+      deleteBtn.textContent = 'Eliminar';
+      deleteBtn.className = 'text-sm text-red-600 underline';
+      deleteBtn.addEventListener('click', () => {
+        eliminarPermiso(permiso.id, permiso.nombre);
+      });
+
+      li.appendChild(left);
+      li.appendChild(deleteBtn);
+      permissionsList.appendChild(li);
+    });
+  } catch (err) {
+    console.error(err);
+  }
+}
+
+// Crear permiso
+createPermissionForm.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  createPermissionMsg.classList.add('hidden');
+  createPermissionMsg.textContent = '';
+
+  const nombre = newPermissionNameInput.value.trim();
+  if (!nombre) return;
+
+  try {
+    const res = await fetch('/api/permissions', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: 'Bearer ' + token
+      },
+      body: JSON.stringify({ nombre })
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      throw new Error(data.error || 'No se pudo crear el permiso');
+    }
+
+    createPermissionMsg.textContent = 'Permiso creado correctamente';
+    createPermissionMsg.classList.remove('hidden');
+    createPermissionMsg.classList.remove('text-red-500');
+    createPermissionMsg.classList.add('text-emerald-600');
+
+    newPermissionNameInput.value = '';
+    cargarPermisos();
+  } catch (err) {
+    createPermissionMsg.textContent = err.message;
+    createPermissionMsg.classList.remove('hidden');
+    createPermissionMsg.classList.remove('text-emerald-600');
+    createPermissionMsg.classList.add('text-red-500');
+  }
+});
+
+// Eliminar permiso
+async function eliminarPermiso(id, nombre) {
+  const confirmar = window.confirm(`¿Seguro que querés eliminar el permiso "${nombre}"?`);
+  if (!confirmar) return;
+
+  try {
+    const res = await fetch(`/api/permissions/${id}`, {
+      method: 'DELETE',
+      headers: {
+        Authorization: 'Bearer ' + token
+      }
+    });
+
+    if (!res.ok && res.status !== 204) {
+      const data = await res.json();
+      throw new Error(data.error || 'No se pudo eliminar el permiso');
+    }
+
+    cargarPermisos();
+  } catch (err) {
+    alert(err.message);
+  }
+}
+
+// ------- INICIO -------
+
 cargarRoles();
+cargarPermisos();
