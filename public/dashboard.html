@@ -2,12 +2,13 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <title>Dashboard - Roles</title>
+  <title>Dashboard - Roles y Permisos</title>
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="min-h-screen bg-slate-100">
+  <!-- Barra superior -->
   <nav class="bg-white shadow p-4 flex justify-between items-center">
-    <h1 class="font-semibold text-lg">Panel de Roles</h1>
+    <h1 class="font-semibold text-lg">Panel de administración</h1>
     <div>
       <span id="userEmail" class="text-sm text-slate-600 mr-4"></span>
       <button
@@ -18,83 +19,105 @@
   </nav>
 
   <main class="max-w-4xl mx-auto mt-8 space-y-6">
-    <!-- Crear rol -->
-    <section class="bg-white rounded-xl shadow p-6">
-      <h2 class="text-lg font-semibold mb-3">Crear nuevo rol</h2>
-      <form id="createRoleForm" class="flex gap-3 flex-wrap items-center">
-        <input
-          type="text"
-          id="newRoleName"
-          placeholder="Nombre del rol"
-          class="border rounded px-3 py-2 flex-1 min-w-[200px]"
-          required
-        />
-        <button
-          type="submit"
-          class="bg-emerald-600 text-white rounded px-4 py-2 hover:bg-emerald-700 transition"
-        >
-          Crear
-        </button>
-      </form>
-      <p id="createRoleMsg" class="text-sm mt-2 hidden"></p>
-    </section>
+    <!-- Pestañas -->
+    <div class="bg-white rounded-xl shadow p-1 flex gap-1">
+      <button
+        id="tabRoles"
+        class="flex-1 px-3 py-2 rounded-lg text-sm font-medium bg-slate-900 text-white"
+      >
+        Roles
+      </button>
+      <button
+        id="tabPermisos"
+        class="flex-1 px-3 py-2 rounded-lg text-sm font-medium bg-slate-100 text-slate-700"
+      >
+        Permisos
+      </button>
+      <!-- si más adelante querés usuarios, agregamos otra pestaña acá -->
+    </div>
 
-    <!-- Editar rol -->
-    <section class="bg-white rounded-xl shadow p-6">
-      <h2 class="text-lg font-semibold mb-3">Editar rol</h2>
-      <form id="editRoleForm" class="flex gap-3 flex-wrap items-center">
-        <input type="hidden" id="editRoleId" />
-        <input
-          type="text"
-          id="editRoleName"
-          placeholder="Seleccioná un rol para editar"
-          class="border rounded px-3 py-2 flex-1 min-w-[200px]"
-          required
-        />
-        <button
-          type="submit"
-          class="bg-blue-600 text-white rounded px-4 py-2 hover:bg-blue-700 transition"
-        >
-          Guardar cambios
-        </button>
-      </form>
-      <p class="text-xs text-slate-500 mt-1">
-        Tip: hacé clic en "Editar" en la lista para completar estos campos.
-      </p>
-      <p id="editRoleMsg" class="text-sm mt-2 hidden"></p>
-    </section>
+    <!-- VISTA ROLES -->
+    <div id="view-roles" class="space-y-6">
+      <!-- Crear rol -->
+      <section class="bg-white rounded-xl shadow p-6">
+        <h2 class="text-lg font-semibold mb-3">Crear nuevo rol</h2>
+        <form id="createRoleForm" class="flex gap-3 flex-wrap items-center">
+          <input
+            type="text"
+            id="newRoleName"
+            placeholder="Nombre del rol"
+            class="border rounded px-3 py-2 flex-1 min-w-[200px]"
+            required
+          />
+          <button
+            type="submit"
+            class="bg-emerald-600 text-white rounded px-4 py-2 hover:bg-emerald-700 transition"
+          >
+            Crear
+          </button>
+        </form>
+        <p id="createRoleMsg" class="text-sm mt-2 hidden"></p>
+      </section>
 
-    <!-- Listado de roles -->
-    <section class="bg-white rounded-xl shadow p-6">
-      <h2 class="text-lg font-semibold mb-4">Roles registrados</h2>
-      <p id="error" class="text-red-500 text-sm mb-2 hidden"></p>
-      <ul id="rolesList" class="space-y-2"></ul>
-    </section>
+      <!-- Editar rol -->
+      <section class="bg-white rounded-xl shadow p-6">
+        <h2 class="text-lg font-semibold mb-3">Editar rol</h2>
+        <form id="editRoleForm" class="flex gap-3 flex-wrap items-center">
+          <input type="hidden" id="editRoleId" />
+          <input
+            type="text"
+            id="editRoleName"
+            placeholder="Seleccioná un rol para editar"
+            class="border rounded px-3 py-2 flex-1 min-w-[200px]"
+            required
+          />
+          <button
+            type="submit"
+            class="bg-blue-600 text-white rounded px-4 py-2 hover:bg-blue-700 transition"
+          >
+            Guardar cambios
+          </button>
+        </form>
+        <p class="text-xs text-slate-500 mt-1">
+          Tip: hacé clic en "Editar" en la lista para completar estos campos.
+        </p>
+        <p id="editRoleMsg" class="text-sm mt-2 hidden"></p>
+      </section>
 
-<!-- Permisos -->
-    <section class="bg-white rounded-xl shadow p-6">
-      <h2 class="text-lg font-semibold mb-3">Permisos</h2>
+      <!-- Listado de roles -->
+      <section class="bg-white rounded-xl shadow p-6">
+        <h2 class="text-lg font-semibold mb-4">Roles registrados</h2>
+        <p id="error" class="text-red-500 text-sm mb-2 hidden"></p>
+        <ul id="rolesList" class="space-y-2"></ul>
+      </section>
+    </div>
 
-      <form id="createPermissionForm" class="flex gap-3 flex-wrap items-center mb-4">
-        <input
-          type="text"
-          id="newPermissionName"
-          placeholder="Nombre del permiso (ej: ver_usuarios)"
-          class="border rounded px-3 py-2 flex-1 min-w-[200px]"
-          required
-        />
-        <button
-          type="submit"
-          class="bg-emerald-600 text-white rounded px-4 py-2 hover:bg-emerald-700 transition"
-        >
-          Crear permiso
-        </button>
-      </form>
+    <!-- VISTA PERMISOS -->
+    <div id="view-permissions" class="space-y-6 hidden">
+      <section class="bg-white rounded-xl shadow p-6">
+        <h2 class="text-lg font-semibold mb-3">Permisos</h2>
 
-      <p id="createPermissionMsg" class="text-sm mb-3 hidden"></p>
+        <form id="createPermissionForm" class="flex gap-3 flex-wrap items-center mb-4">
+          <input
+            type="text"
+            id="newPermissionName"
+            placeholder="Nombre del permiso (ej: ver_usuarios)"
+            class="border rounded px-3 py-2 flex-1 min-w-[200px]"
+            required
+          />
+          <button
+            type="submit"
+            class="bg-emerald-600 text-white rounded px-4 py-2 hover:bg-emerald-700 transition"
+          >
+            Crear permiso
+          </button>
+        </form>
 
-      <ul id="permissionsList" class="space-y-2"></ul>
-    </section>
+        <p id="createPermissionMsg" class="text-sm mb-3 hidden"></p>
+
+        <ul id="permissionsList" class="space-y-2"></ul>
+      </section>
+    </div>
   </main>
 
   <script src="/js/dashboard.js"></script>

@@ -10,4 +10,4 @@ router.post('/', auth, permissionController.create);
 router.put('/:id', auth, permissionController.update);
 router.delete('/:id', auth, permissionController.remove);
 
-module.exports = router; // 👈 súper importante
+module.exports = router; // súper importante

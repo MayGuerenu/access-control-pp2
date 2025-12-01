@@ -10,6 +10,10 @@
     "test": "jest --coverage"
   },
 
+   "jest": {
+    "testEnvironment": "node"
+  },
+
   "dependencies": {
     "@supabase/supabase-js": "^2.86.0",
     "bcryptjs": "^3.0.3",

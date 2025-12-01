@@ -1,5 +1,12 @@
 // public/js/dashboard.js
+
 // ------- REFERENCIAS A ELEMENTOS DEL DOM -------
+
+// Tabs
+const tabRoles = document.getElementById('tabRoles');
+const tabPermisos = document.getElementById('tabPermisos');
+const viewRoles = document.getElementById('view-roles');
+const viewPermissions = document.getElementById('view-permissions');
 
 // Roles
 const rolesList = document.getElementById('rolesList');
@@ -38,20 +45,45 @@ if (userEmail && userEmailEl) {
 }
 
 // Logout
-logoutBtn.addEventListener('click', () => {
+logoutBtn?.addEventListener('click', () => {
   localStorage.removeItem('token');
   localStorage.removeItem('userEmail');
   window.location.href = '/login.html';
 });
+
+// ------- LÓGICA DE PESTAÑAS -------
+
+function activarTab(tab) {
+  if (tab === 'roles') {
+    viewRoles.classList.remove('hidden');
+    viewPermissions.classList.add('hidden');
+
+    tabRoles.classList.add('bg-slate-900', 'text-white');
+    tabRoles.classList.remove('bg-slate-100', 'text-slate-700');
+
+    tabPermisos.classList.remove('bg-slate-900', 'text-white');
+    tabPermisos.classList.add('bg-slate-100', 'text-slate-700');
+  } else if (tab === 'permisos') {
+    viewPermissions.classList.remove('hidden');
+    viewRoles.classList.add('hidden');
+
+    tabPermisos.classList.add('bg-slate-900', 'text-white');
+    tabPermisos.classList.remove('bg-slate-100', 'text-slate-700');
+
+    tabRoles.classList.remove('bg-slate-900', 'text-white');
+    tabRoles.classList.add('bg-slate-100', 'text-slate-700');
+  }
+}
+
+tabRoles?.addEventListener('click', () => activarTab('roles'));
+tabPermisos?.addEventListener('click', () => activarTab('permisos'));
 
 // ------- ROLES: CARGAR, CREAR, EDITAR, ELIMINAR -------
 
 async function cargarRoles() {
   try {
     const res = await fetch('/api/roles', {
-      headers: {
-        Authorization: 'Bearer ' + token
-      }
+      headers: { Authorization: 'Bearer ' + token }
     });
 
     const data = await res.json();
@@ -80,6 +112,7 @@ async function cargarRoles() {
       editBtn.className = 'text-sm text-blue-600 underline';
       editBtn.addEventListener('click', () => {
         seleccionarRolParaEditar(role);
+        activarTab('roles');
       });
 
       const deleteBtn = document.createElement('button');
@@ -98,13 +131,17 @@ async function cargarRoles() {
       rolesList.appendChild(li);
     });
   } catch (err) {
-    errorEl.textContent = err.message;
-    errorEl.classList.remove('hidden');
+    if (errorEl) {
+      errorEl.textContent = err.message;
+      errorEl.classList.remove('hidden');
+    } else {
+      console.error(err);
+    }
   }
 }
 
 // Crear rol
-createRoleForm.addEventListener('submit', async (e) => {
+createRoleForm?.addEventListener('submit', async (e) => {
   e.preventDefault();
   createRoleMsg.classList.add('hidden');
   createRoleMsg.textContent = '';
@@ -152,7 +189,7 @@ function seleccionarRolParaEditar(role) {
 }
 
 // Guardar cambios de rol
-editRoleForm.addEventListener('submit', async (e) => {
+editRoleForm?.addEventListener('submit', async (e) => {
   e.preventDefault();
   editRoleMsg.classList.add('hidden');
   editRoleMsg.textContent = '';
@@ -205,9 +242,7 @@ async function eliminarRol(id, name) {
   try {
     const res = await fetch(`/api/roles/${id}`, {
       method: 'DELETE',
-      headers: {
-        Authorization: 'Bearer ' + token
-      }
+      headers: { Authorization: 'Bearer ' + token }
     });
 
     if (!res.ok && res.status !== 204) {
@@ -226,9 +261,7 @@ async function eliminarRol(id, name) {
 async function cargarPermisos() {
   try {
     const res = await fetch('/api/permissions', {
-      headers: {
-        Authorization: 'Bearer ' + token
-      }
+      headers: { Authorization: 'Bearer ' + token }
     });
 
     const data = await res.json();
@@ -263,7 +296,7 @@ async function cargarPermisos() {
 }
 
 // Crear permiso
-createPermissionForm.addEventListener('submit', async (e) => {
+createPermissionForm?.addEventListener('submit', async (e) => {
   e.preventDefault();
   createPermissionMsg.classList.add('hidden');
   createPermissionMsg.textContent = '';
@@ -310,9 +343,7 @@ async function eliminarPermiso(id, nombre) {
   try {
     const res = await fetch(`/api/permissions/${id}`, {
       method: 'DELETE',
-      headers: {
-        Authorization: 'Bearer ' + token
-      }
+      headers: { Authorization: 'Bearer ' + token }
     });
 
     if (!res.ok && res.status !== 204) {
@@ -328,5 +359,6 @@ async function eliminarPermiso(id, nombre) {
 
 // ------- INICIO -------
 
+activarTab('roles');
 cargarRoles();
 cargarPermisos();
