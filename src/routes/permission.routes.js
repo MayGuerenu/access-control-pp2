@@ -1,13 +1,16 @@
-const express = require('express');
-const router = express.Router();
-const permissionController = require('../controllers/permission.controller');
-const auth = require('../middlewares/auth.middleware');
+const { Router } = require('express');
+const {
+  getPermissions,
+  createPermission,
+  updatePermission,
+  deletePermission,
+} = require('../controllers/permission.controller');
 
-// Todas protegidas con JWT
-router.get('/', auth, permissionController.list);
-router.get('/:id', auth, permissionController.getOne);
-router.post('/', auth, permissionController.create);
-router.put('/:id', auth, permissionController.update);
-router.delete('/:id', auth, permissionController.remove);
+const router = Router();
 
-module.exports = router; // súper importante
+router.get('/', getPermissions);
+router.post('/', createPermission);
+router.put('/:id', updatePermission);
+router.delete('/:id', deletePermission);
+
+module.exports = router;

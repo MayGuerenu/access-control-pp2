@@ -277,13 +277,13 @@ async function cargarPermisos() {
       li.className = 'border rounded px-3 py-2 flex justify-between items-center';
 
       const left = document.createElement('span');
-      left.textContent = permiso.nombre;
+      left.textContent = permiso.code;
 
       const deleteBtn = document.createElement('button');
       deleteBtn.textContent = 'Eliminar';
       deleteBtn.className = 'text-sm text-red-600 underline';
       deleteBtn.addEventListener('click', () => {
-        eliminarPermiso(permiso.id, permiso.nombre);
+        eliminarPermiso(permiso.id, permiso.code);
       });
 
       li.appendChild(left);
@@ -305,20 +305,20 @@ createPermissionForm?.addEventListener('submit', async (e) => {
   if (!nombre) return;
 
   try {
-    const res = await fetch('/api/permissions', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: 'Bearer ' + token
-      },
-      body: JSON.stringify({ nombre })
-    });
+    const res = await fetch('/api/permisos', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({
+    code: nombre,
+    description: ''
+  })
+});
 
-    const data = await res.json();
+const data = await res.json();
 
-    if (!res.ok) {
-      throw new Error(data.error || 'No se pudo crear el permiso');
-    }
+if (!res.ok) {
+  throw new Error(data.error || 'No se pudo crear el permiso');
+}
 
     createPermissionMsg.textContent = 'Permiso creado correctamente';
     createPermissionMsg.classList.remove('hidden');

@@ -2,50 +2,202 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <title>Registro - Access Control</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-</head>
-<body class="min-h-screen flex items-center justify-center bg-slate-100">
-  <div class="bg-white rounded-xl shadow p-6 w-full max-w-sm">
-    <h1 class="text-xl font-semibold mb-4 text-center">Crear cuenta</h1>
+  <title>Casa Pueblo - San Pedro</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <form id="registerForm" class="space-y-3">
-      <input
-        class="w-full border rounded px-3 py-2"
-        type="text"
-        id="user"
-        placeholder="Nombre"
-        required
-      />
-      <input
-        class="w-full border rounded px-3 py-2"
-        type="email"
-        id="email"
-        placeholder="Email"
-        required
-      />
-      <input
-        class="w-full border rounded px-3 py-2"
-        type="password"
-        id="password"
-        placeholder="Contraseña (mínimo 6 caracteres)"
-        required
-      />
-      <button
-        class="w-full bg-emerald-600 text-white rounded py-2 hover:bg-emerald-700 transition"
-        type="submit"
-      >
-        Registrarme
-      </button>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+        sans-serif;
+      background: #f4f5fb;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+    }
+
+    .card {
+      background: #ffffff;
+      padding: 24px 28px;
+      border-radius: 16px;
+      box-shadow: 0 10px 30px rgba(15, 23, 42, 0.12);
+      width: 100%;
+      max-width: 460px;
+    }
+
+    h1 {
+      margin-top: 0;
+      margin-bottom: 4px;
+      font-size: 1.4rem;
+    }
+
+    .subtitle {
+      margin: 0 0 16px;
+      font-size: 0.9rem;
+      color: #6b7280;
+    }
+
+    .field {
+      margin-bottom: 10px;
+    }
+
+    label {
+      display: block;
+      font-size: 0.9rem;
+      font-weight: 500;
+      margin-bottom: 4px;
+    }
+
+    input,
+    select {
+      width: 100%;
+      padding: 8px 10px;
+      border-radius: 10px;
+      border: 1px solid #d1d5db;
+      font-size: 0.9rem;
+      outline: none;
+      background: #f9fafb;
+    }
+
+    input:focus,
+    select:focus {
+      border-color: #4f46e5;
+      background: #ffffff;
+      box-shadow: 0 0 0 1px rgba(79, 70, 229, 0.2);
+    }
+
+    button {
+      width: 100%;
+      margin-top: 8px;
+      padding: 10px 14px;
+      border-radius: 999px;
+      border: none;
+      background: #4f46e5;
+      color: #ffffff;
+      font-weight: 600;
+      font-size: 0.95rem;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #4338ca;
+    }
+
+    #message {
+      margin-top: 10px;
+      font-size: 0.9rem;
+    }
+
+    /* Para que JS siga funcionando con estas clases */
+    .hidden {
+      display: none;
+    }
+
+    .text-emerald-600 {
+      color: #047857;
+    }
+
+    .text-red-500 {
+      color: #ef4444;
+    }
+
+    .helper {
+      margin-top: 10px;
+      font-size: 0.8rem;
+      color: #6b7280;
+      text-align: center;
+    }
+
+    .helper a {
+      color: #4f46e5;
+      text-decoration: none;
+    }
+
+    .helper a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+
+<body>
+  <main class="card">
+    <h1>Casa Pueblo - San Pedro</h1>
+    <p class="subtitle">
+      Cargá tus datos para sumarte como voluntario, socio o coordinador.
+    </p>
+
+    <form id="registerForm">
+      <div class="field">
+        <label for="nombre">Nombre</label>
+        <input id="nombre" type="text" required />
+      </div>
+
+      <div class="field">
+        <label for="apellido">Apellido</label>
+        <input id="apellido" type="text" required />
+      </div>
+
+      <div class="field">
+        <label for="email">Email</label>
+        <input id="email" type="email" required />
+      </div>
+
+      <div class="field">
+        <label for="password">Contraseña</label>
+        <input id="password" type="password" required />
+      </div>
+
+      <div class="field">
+        <label for="tipoPersona">Tipo de persona</label>
+        <select id="tipoPersona" required>
+          <option value="VOLUNTARIO">Voluntario</option>
+          <option value="SOCIO">Socio</option>
+          <option value="COORDINADOR">Coordinador</option>
+          <option value="ADMIN">Admin</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label for="area">Área</label>
+        <select id="area" required>
+          <option value="COMEDOR">Comedor</option>
+          <option value="APOYO_ESCOLAR">Apoyo escolar</option>
+          <option value="ROPERITO">Roperito</option>
+          <option value="ADMINISTRACION">Administración</option>
+          <option value="EVENTOS">Eventos</option>
+          <option value="OTRO">Otro</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label for="telefono">Teléfono</label>
+        <input id="telefono" type="text" />
+      </div>
+
+      <div class="field">
+        <label for="disponibilidad">Disponibilidad</label>
+        <input
+          id="disponibilidad"
+          type="text"
+          placeholder="Ej: Sábados de 9 a 13"
+        />
+      </div>
+
+      <button type="submit">Registrarse</button>
     </form>
 
-    <p id="message" class="text-sm mt-3 hidden"></p>
+    <p id="message" class="hidden"></p>
 
-    <p class="mt-4 text-sm text-center">
+    <p class="helper">
       ¿Ya tenés cuenta?
-      <a href="/login.html" class="text-blue-600 underline">Iniciar sesión</a>
+      <a href="/js/login.html">Iniciar sesión</a>
     </p>
-  </div>
+  </main>
 
   <script src="/js/register.js"></script>
 </body>

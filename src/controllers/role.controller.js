@@ -1,51 +1,79 @@
-const roleService = require('../services/role.service');
+const { roles } = require('../data/memoryDb');
 
-async function list(req, res) {
-  try {
-    const roles = await roleService.getAllRoles();
-    res.json(roles);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
+let nextRoleId = roles.length ? Math.max(...roles.map(r => r.id)) + 1 : 1;
+
+// GET /api/roles
+const getRoles = (req, res) => {
+  // Devolvemos también un _id para compatibilidad con el front
+  const data = roles.map((r) => ({
+    ...r,
+    _id: r.id, // por si el front usa _id
+  }));
+  res.json(data);
+};
+
+// POST /api/roles
+const createRole = (req, res) => {
+  const { name } = req.body;
+
+  if (!name) {
+    return res.status(400).json({ error: 'El nombre del rol es obligatorio' });
   }
-}
 
-async function getOne(req, res) {
-  try {
-    const id = Number(req.params.id);
-    const role = await roleService.getRoleById(id);
-    res.json(role);
-  } catch (err) {
-    res.status(404).json({ error: err.message });
+  const exists = roles.find(
+    (r) => r.name.toLowerCase() === name.toLowerCase()
+  );
+  if (exists) {
+    return res.status(400).json({ error: 'Ese rol ya existe' });
   }
-}
 
-async function create(req, res) {
-  try {
-    const role = await roleService.createRole(req.body);
-    res.status(201).json(role);
-  } catch (err) {
-    res.status(400).json({ error: err.message });
+  const newRole = {
+    id: nextRoleId++,
+    name,
+    description: '',
+  };
+
+  roles.push(newRole);
+
+  res.status(201).json({
+    ...newRole,
+    _id: newRole.id,
+  });
+};
+
+// PUT /api/roles/:id
+const updateRole = (req, res) => {
+  const { id } = req.params;
+  const { name, description } = req.body;
+
+  const role = roles.find((r) => r.id === Number(id));
+  if (!role) {
+    return res.status(404).json({ error: 'Rol no encontrado' });
   }
-}
 
-async function update(req, res) {
-  try {
-    const id = Number(req.params.id);
-    const role = await roleService.updateRole(id, req.body);
-    res.json(role);
-  } catch (err) {
-    res.status(400).json({ error: err.message });
+  if (name) role.name = name;
+  if (description !== undefined) role.description = description;
+
+  res.json({
+    ...role,
+    _id: role.id,
+  });
+};
+
+// DELETE /api/roles/:id
+const deleteRole = (req, res) => {
+  const { id } = req.params;
+  const index = roles.findIndex((r) => r.id === Number(id));
+
+  if (index === -1) {
+    return res.status(404).json({ error: 'Rol no encontrado' });
   }
-}
 
-async function remove(req, res) {
-  try {
-    const id = Number(req.params.id);
-    await roleService.deleteRole(id);
-    res.status(204).send();
-  } catch (err) {
-    res.status(400).json({ error: err.message });
-  }
-}
+  const deleted = roles.splice(index, 1)[0];
+  res.json({
+    message: 'Rol eliminado correctamente',
+    deleted: { ...deleted, _id: deleted.id },
+  });
+};
 
-module.exports = { list, getOne, create, update, remove };
+module.exports = { getRoles, createRole, updateRole, deleteRole };

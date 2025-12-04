@@ -6,17 +6,29 @@ form.addEventListener('submit', async (e) => {
   messageEl.classList.add('hidden');
   messageEl.textContent = '';
 
-  const user = document.getElementById('user').value;
+  const nombre = document.getElementById('nombre').value;
+  const apellido = document.getElementById('apellido').value;
   const email = document.getElementById('email').value;
   const password = document.getElementById('password').value;
+  const tipoPersona = document.getElementById('tipoPersona').value;
+  const area = document.getElementById('area').value;
+  const telefono = document.getElementById('telefono').value;
+  const disponibilidad = document.getElementById('disponibilidad').value;
 
   try {
     const res = await fetch('/api/auth/register', {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({ user, email, password })
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        nombre,
+        apellido,
+        email,
+        password,
+        tipoPersona,
+        area,
+        telefono,
+        disponibilidad,
+      }),
     });
 
     const data = await res.json();
@@ -25,13 +37,12 @@ form.addEventListener('submit', async (e) => {
       throw new Error(data.error || 'Error al registrarse');
     }
 
-    // Mensaje de éxito
-    messageEl.textContent = 'Usuario creado con éxito. Ahora podés iniciar sesión.';
+    messageEl.textContent =
+      'Persona registrada en la ONG con éxito. Ahora podés iniciar sesión.';
     messageEl.classList.remove('hidden');
     messageEl.classList.remove('text-red-500');
     messageEl.classList.add('text-emerald-600');
 
-    // Limpiar form y redirigir al login después de 1.5s
     form.reset();
     setTimeout(() => {
       window.location.href = '/login.html';

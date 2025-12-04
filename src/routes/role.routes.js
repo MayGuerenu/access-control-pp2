@@ -1,14 +1,16 @@
-// src/routes/role.routes.js
-const express = require('express');
-const router = express.Router();
-const roleController = require('../controllers/role.controller');
-const auth = require('../middlewares/auth.middleware');
+const { Router } = require('express');
+const {
+  getRoles,
+  createRole,
+  updateRole,
+  deleteRole,
+} = require('../controllers/role.controller');
 
-// Todas las rutas de roles protegidas con JWT
-router.get('/', auth, roleController.list);
-router.get('/:id', auth, roleController.getOne);
-router.post('/', auth, roleController.create);
-router.put('/:id', auth, roleController.update);
-router.delete('/:id', auth, roleController.remove);
+const router = Router();
+
+router.get('/', getRoles);
+router.post('/', createRole);
+router.put('/:id', updateRole);
+router.delete('/:id', deleteRole);
 
 module.exports = router;

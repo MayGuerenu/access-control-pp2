@@ -1,51 +1,85 @@
-const permissionService = require('../services/permission.service');
+const { permissions } = require('../data/memoryDb');
 
-async function list(req, res) {
-  try {
-    const permisos = await permissionService.getAllPermissions();
-    res.json(permisos);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
+let nextPermissionId = permissions.length
+  ? Math.max(...permissions.map((p) => p.id)) + 1
+  : 1;
+
+// GET /api/permisos  o /api/permissions
+const getPermissions = (req, res) => {
+  const data = permissions.map((p) => ({
+    ...p,
+    _id: p.id, // compatibilidad por si el front usa _id
+  }));
+  res.json(data);
+};
+
+// POST /api/permisos
+const createPermission = (req, res) => {
+  const { code, description } = req.body;
+
+  if (!code) {
+    return res.status(400).json({ error: 'El código del permiso es obligatorio' });
   }
-}
 
-async function getOne(req, res) {
-  try {
-    const id = Number(req.params.id);
-    const permiso = await permissionService.getPermissionById(id);
-    res.json(permiso);
-  } catch (err) {
-    res.status(404).json({ error: err.message });
+  const exists = permissions.find(
+    (p) => p.code.toLowerCase() === code.toLowerCase()
+  );
+  if (exists) {
+    return res.status(400).json({ error: 'Ese permiso ya existe' });
   }
-}
 
-async function create(req, res) {
-  try {
-    const permiso = await permissionService.createPermission(req.body);
-    res.status(201).json(permiso);
-  } catch (err) {
-    res.status(400).json({ error: err.message });
+  const newPermission = {
+    id: nextPermissionId++,
+    code,
+    description: description || '',
+  };
+
+  permissions.push(newPermission);
+
+  res.status(201).json({
+    ...newPermission,
+    _id: newPermission.id,
+  });
+};
+
+// PUT /api/permisos/:id
+const updatePermission = (req, res) => {
+  const { id } = req.params;
+  const { code, description } = req.body;
+
+  const permission = permissions.find((p) => p.id === Number(id));
+  if (!permission) {
+    return res.status(404).json({ error: 'Permiso no encontrado' });
   }
-}
 
-async function update(req, res) {
-  try {
-    const id = Number(req.params.id);
-    const permiso = await permissionService.updatePermission(id, req.body);
-    res.json(permiso);
-  } catch (err) {
-    res.status(400).json({ error: err.message });
+  if (code) permission.code = code;
+  if (description !== undefined) permission.description = description;
+
+  res.json({
+    ...permission,
+    _id: permission.id,
+  });
+};
+
+// DELETE /api/permisos/:id
+const deletePermission = (req, res) => {
+  const { id } = req.params;
+  const index = permissions.findIndex((p) => p.id === Number(id));
+
+  if (index === -1) {
+    return res.status(404).json({ error: 'Permiso no encontrado' });
   }
-}
 
-async function remove(req, res) {
-  try {
-    const id = Number(req.params.id);
-    await permissionService.deletePermission(id);
-    res.status(204).send();
-  } catch (err) {
-    res.status(400).json({ error: err.message });
-  }
-}
+  const deleted = permissions.splice(index, 1)[0];
+  res.json({
+    message: 'Permiso eliminado correctamente',
+    deleted: { ...deleted, _id: deleted.id },
+  });
+};
 
-module.exports = { list, getOne, create, update, remove };
+module.exports = {
+  getPermissions,
+  createPermission,
+  updatePermission,
+  deletePermission,
+};
