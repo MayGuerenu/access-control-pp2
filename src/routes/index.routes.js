@@ -1,15 +1,10 @@
-const { Router } = require('express');
-const authRoutes = require('./auth.routes');
-const roleRoutes = require('./role.routes');
-const permissionRoutes = require('./permission.routes');
+const express = require('express');
+const router = express.Router();
 
-const router = Router();
+const authRoutes = require('./auth.routes.js');
+const actividadRoutes = require('./actividad.routes.js');
 
 router.use('/auth', authRoutes);
-router.use('/roles', roleRoutes);
-
-// dependiendo de cómo lo llame el front, cubrimos ambos:
-router.use('/permisos', permissionRoutes);
-router.use('/permissions', permissionRoutes);
+router.use('/actividades', actividadRoutes);
 
 module.exports = router;

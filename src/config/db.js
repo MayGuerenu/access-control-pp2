@@ -1,24 +1,12 @@
-// src/config/db.js
-const mongoose = require('mongoose');
+const { Pool } = require('pg');
+require('dotenv').config();
 
-const connectDB = async () => {
-  try {
-    const uri = process.env.MONGO_URI;
-    if (!uri) {
-      console.error('Falta MONGO_URI en el .env');
-      process.exit(1);
-    }
+// Configuración de conexión a Supabase/Postgres
+const pool = new Pool({
+  connectionString: process.env.SUPABASE_URL, // debe estar en el archivo .env
+  ssl: { rejectUnauthorized: false } // necesario para conexiones seguras en la nube
+});
 
-    await mongoose.connect(uri, {
-      // useNewUrlParser: true,
-      // useUnifiedTopology: true,
-    });
+// Exportamos el pool para usarlo en servicios y controladores
+module.exports = pool;
 
-    console.log('✅ Conectado a MongoDB');
-  } catch (err) {
-    console.error('❌ Error al conectar a MongoDB:', err);
-    process.exit(1);
-  }
-};
-
-module.exports = connectDB;

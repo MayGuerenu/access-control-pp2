@@ -1,25 +1,28 @@
 const express = require('express');
-const cors = require('cors');
-require('dotenv').config();
-
-const apiRoutes = require('./routes/index.routes');
-// const connectDB = require('./config/db');
-
 const app = express();
-const PORT = process.env.PORT || 3000;
+const path = require('path');
+app.use(express.static(path.join(__dirname, '../public')));
 
-// connectDB();
 
-app.use(cors());
-app.use(express.json());
-app.use(express.static('public'));
 
-app.use('/api', apiRoutes);
+const pool = require('./config/db');
 
-app.get('/', (req, res) => {
-  res.send('API PP2 funcionando');
+pool.query('SELECT NOW()', (err, res) => {
+  if (err) {
+    console.error('Error de conexión a la base:', err);
+  } else {
+    console.log('Conexión exitosa:', res.rows);
+  }
 });
 
+
+// Importar rutas (con extensión .js)
+const routes = require('./routes/index.routes.js');
+
+app.use(express.json());
+app.use('/api', routes);
+
+const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-  console.log(`Server running on http://localhost:${PORT}`);
+  console.log(`Servidor corriendo en http://localhost:${PORT}`);
 });

@@ -1,54 +1,34 @@
-const supabase = require('../config/db');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const pool = require('../config/db');
 
-async function registerUser({ user, email, password }) {
-  if (!user || user.length < 2) throw new Error('Nombre inválido');
-  if (!email || !email.includes('@')) throw new Error('Email inválido');
-  if (!password || password.length < 6) throw new Error('La contraseña debe tener al menos 6 caracteres');
+const JWT_SECRET = process.env.JWT_SECRET || 'default-secret';
 
-  const salt = bcrypt.genSaltSync(10);
-  const password_hash = bcrypt.hashSync(password, salt);
+// Registro de usuario
+async function registerUser({ nombre, email, password, rol }) {
+  const hashedPassword = await bcrypt.hash(password, 10);
 
-  const { data, error } = await supabase
-    .from('users')
-    .insert({
-      user,
-      email,
-      password_hash,
-      role_id: 2  // por defecto usuario común
-    })
-    .select()
-    .single();
+  const result = await pool.query(
+    'INSERT INTO usuarios (nombre, email, password_hash, rol) VALUES ($1, $2, $3, $4) RETURNING *',
+    [nombre, email, hashedPassword, rol || 'voluntario']
+  );
 
-  if (error) {
-    if (error.code === '23505') throw new Error('El email ya está registrado');
-    throw error;
-  }
-
-  return { id: data.id, user: data.user, email: data.email };
+  return result.rows[0];
 }
 
-async function login(email, password) {
-  if (!email || !password) throw new Error('Email y contraseña requeridos');
+// Login de usuario
+async function loginUser({ email, password }) {
+  const result = await pool.query('SELECT * FROM usuarios WHERE email = $1', [email]);
+  const user = result.rows[0];
 
-  const { data: user, error } = await supabase
-    .from('users')
-    .select('*')
-    .eq('email', email)
-    .single();
+  if (!user) throw new Error('Usuario no encontrado');
 
-  if (error || !user) {
-    throw new Error('Credenciales inválidas');
-  }
+  const isMatch = await bcrypt.compare(password, user.password_hash);
+  if (!isMatch) throw new Error('Contraseña incorrecta');
 
-  const match = bcrypt.compareSync(password, user.password_hash);
-  if (!match) throw new Error('Credenciales inválidas');
+  const token = jwt.sign({ id: user.id, email: user.email }, JWT_SECRET, { expiresIn: '1h' });
 
-  const payload = { id: user.id, email: user.email, role_id: user.role_id };
-  const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '1h' });
-
-  return { token, user: payload };
+  return { token, user };
 }
 
-module.exports = { registerUser, login };
+module.exports = { registerUser, loginUser };
