@@ -1,21 +1,27 @@
 const form = document.getElementById('loginForm');
-const errorEl = document.getElementById('error');
+const messageEl = document.getElementById('message');
 
 form.addEventListener('submit', async (e) => {
   e.preventDefault();
-  errorEl.classList.add('hidden');
-  errorEl.textContent = '';
+  messageEl.classList.add('hidden');
+  messageEl.textContent = '';
 
-  const email = document.getElementById('email').value;
-  const password = document.getElementById('password').value;
+  const email = document.getElementById('email').value.trim();
+  const password = document.getElementById('password').value.trim();
+
+  // Validación
+  if (!email || !password) {
+    messageEl.textContent = 'Email y contraseña son obligatorios';
+    messageEl.classList.remove('hidden');
+    messageEl.classList.add('text-red-500');
+    return;
+  }
 
   try {
     const res = await fetch('/api/auth/login', {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({ email, password })
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password }),
     });
 
     const data = await res.json();
@@ -24,14 +30,24 @@ form.addEventListener('submit', async (e) => {
       throw new Error(data.error || 'Error al iniciar sesión');
     }
 
-    // Guardamos token y email del usuario
+    // Guardar token en localStorage
     localStorage.setItem('token', data.token);
-    localStorage.setItem('userEmail', data.user.email);
 
-    // Ir al dashboard
-    window.location.href = '/dashboard.html';
+    // Mensaje de éxito
+    messageEl.textContent = 'Inicio de sesión exitoso. Redirigiendo...';
+    messageEl.classList.remove('hidden');
+    messageEl.classList.remove('text-red-500');
+    messageEl.classList.add('text-emerald-600');
+
+    // Redirigir al dashboard
+    setTimeout(() => {
+      window.location.href = '/dashboard.html';
+    }, 1500);
+
   } catch (err) {
-    errorEl.textContent = err.message;
-    errorEl.classList.remove('hidden');
+    messageEl.textContent = err.message;
+    messageEl.classList.remove('hidden');
+    messageEl.classList.remove('text-emerald-600');
+    messageEl.classList.add('text-red-500');
   }
 });

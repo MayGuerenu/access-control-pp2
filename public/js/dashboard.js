@@ -1,364 +1,105 @@
-// public/js/dashboard.js
+// Menú
+const menuBtn = document.getElementById('menu-btn');
+const mobileMenu = document.getElementById('mobile-menu');
 
-// ------- REFERENCIAS A ELEMENTOS DEL DOM -------
-
-// Tabs
-const tabRoles = document.getElementById('tabRoles');
-const tabPermisos = document.getElementById('tabPermisos');
-const viewRoles = document.getElementById('view-roles');
-const viewPermissions = document.getElementById('view-permissions');
-
-// Roles
-const rolesList = document.getElementById('rolesList');
-const errorEl = document.getElementById('error');
-const userEmailEl = document.getElementById('userEmail');
-const logoutBtn = document.getElementById('logoutBtn');
-
-const createRoleForm = document.getElementById('createRoleForm');
-const newRoleNameInput = document.getElementById('newRoleName');
-const createRoleMsg = document.getElementById('createRoleMsg');
-
-const editRoleForm = document.getElementById('editRoleForm');
-const editRoleIdInput = document.getElementById('editRoleId');
-const editRoleNameInput = document.getElementById('editRoleName');
-const editRoleMsg = document.getElementById('editRoleMsg');
-
-// Permisos
-const permissionsList = document.getElementById('permissionsList');
-const createPermissionForm = document.getElementById('createPermissionForm');
-const newPermissionNameInput = document.getElementById('newPermissionName');
-const createPermissionMsg = document.getElementById('createPermissionMsg');
-
-// ------- TOKEN Y EMAIL DEL USUARIO -------
-
-const token = localStorage.getItem('token');
-const userEmail = localStorage.getItem('userEmail');
-
-// Si no hay token -> volver al login
-if (!token) {
-  window.location.href = '/login.html';
-}
-
-// Mostrar email arriba
-if (userEmail && userEmailEl) {
-  userEmailEl.textContent = userEmail;
-}
-
-// Logout
-logoutBtn?.addEventListener('click', () => {
-  localStorage.removeItem('token');
-  localStorage.removeItem('userEmail');
-  window.location.href = '/login.html';
-});
-
-// ------- LÓGICA DE PESTAÑAS -------
-
-function activarTab(tab) {
-  if (tab === 'roles') {
-    viewRoles.classList.remove('hidden');
-    viewPermissions.classList.add('hidden');
-
-    tabRoles.classList.add('bg-slate-900', 'text-white');
-    tabRoles.classList.remove('bg-slate-100', 'text-slate-700');
-
-    tabPermisos.classList.remove('bg-slate-900', 'text-white');
-    tabPermisos.classList.add('bg-slate-100', 'text-slate-700');
-  } else if (tab === 'permisos') {
-    viewPermissions.classList.remove('hidden');
-    viewRoles.classList.add('hidden');
-
-    tabPermisos.classList.add('bg-slate-900', 'text-white');
-    tabPermisos.classList.remove('bg-slate-100', 'text-slate-700');
-
-    tabRoles.classList.remove('bg-slate-900', 'text-white');
-    tabRoles.classList.add('bg-slate-100', 'text-slate-700');
-  }
-}
-
-tabRoles?.addEventListener('click', () => activarTab('roles'));
-tabPermisos?.addEventListener('click', () => activarTab('permisos'));
-
-// ------- ROLES: CARGAR, CREAR, EDITAR, ELIMINAR -------
-
-async function cargarRoles() {
-  try {
-    const res = await fetch('/api/roles', {
-      headers: { Authorization: 'Bearer ' + token }
-    });
-
-    const data = await res.json();
-
-    if (!res.ok) {
-      throw new Error(data.error || 'No se pudieron cargar los roles');
-    }
-
-    rolesList.innerHTML = '';
-
-    data.forEach((role) => {
-      const li = document.createElement('li');
-      li.className = 'border rounded px-3 py-2 flex justify-between items-center';
-
-      const left = document.createElement('div');
-      left.innerHTML = `
-        <span class="font-medium">${role.name}</span>
-        <span class="text-xs text-slate-500 ml-2">ID: ${role.id}</span>
-      `;
-
-      const right = document.createElement('div');
-      right.className = 'flex gap-2';
-
-      const editBtn = document.createElement('button');
-      editBtn.textContent = 'Editar';
-      editBtn.className = 'text-sm text-blue-600 underline';
-      editBtn.addEventListener('click', () => {
-        seleccionarRolParaEditar(role);
-        activarTab('roles');
-      });
-
-      const deleteBtn = document.createElement('button');
-      deleteBtn.textContent = 'Eliminar';
-      deleteBtn.className = 'text-sm text-red-600 underline';
-      deleteBtn.addEventListener('click', () => {
-        eliminarRol(role.id, role.name);
-      });
-
-      right.appendChild(editBtn);
-      right.appendChild(deleteBtn);
-
-      li.appendChild(left);
-      li.appendChild(right);
-
-      rolesList.appendChild(li);
-    });
-  } catch (err) {
-    if (errorEl) {
-      errorEl.textContent = err.message;
-      errorEl.classList.remove('hidden');
-    } else {
-      console.error(err);
-    }
-  }
-}
-
-// Crear rol
-createRoleForm?.addEventListener('submit', async (e) => {
-  e.preventDefault();
-  createRoleMsg.classList.add('hidden');
-  createRoleMsg.textContent = '';
-
-  const name = newRoleNameInput.value.trim();
-  if (!name) return;
-
-  try {
-    const res = await fetch('/api/roles', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: 'Bearer ' + token
-      },
-      body: JSON.stringify({ name })
-    });
-
-    const data = await res.json();
-
-    if (!res.ok) {
-      throw new Error(data.error || 'No se pudo crear el rol');
-    }
-
-    createRoleMsg.textContent = 'Rol creado correctamente';
-    createRoleMsg.classList.remove('hidden');
-    createRoleMsg.classList.remove('text-red-500');
-    createRoleMsg.classList.add('text-emerald-600');
-
-    newRoleNameInput.value = '';
-    cargarRoles();
-  } catch (err) {
-    createRoleMsg.textContent = err.message;
-    createRoleMsg.classList.remove('hidden');
-    createRoleMsg.classList.remove('text-emerald-600');
-    createRoleMsg.classList.add('text-red-500');
+menuBtn.addEventListener('click', () => {
+  if (mobileMenu.classList.contains('max-h-0')) {
+    mobileMenu.classList.remove('max-h-0');
+    mobileMenu.classList.add('max-h-40'); // altura suficiente
+  } else {
+    mobileMenu.classList.remove('max-h-40');
+    mobileMenu.classList.add('max-h-0');
   }
 });
 
-// Seleccionar rol para editar
-function seleccionarRolParaEditar(role) {
-  editRoleIdInput.value = role.id;
-  editRoleNameInput.value = role.name;
-  editRoleMsg.classList.add('hidden');
-  editRoleMsg.textContent = '';
-}
+// Perfil y roles
+const messageEl = document.getElementById('message');
+const usuariosContainer = document.getElementById('usuarios-container');
+const verUsuariosBtn = document.getElementById('ver-usuarios-btn');
+const editarBtn = document.getElementById('editar-perfil-btn');
+const editarForm = document.getElementById('editar-perfil-form');
 
-// Guardar cambios de rol
-editRoleForm?.addEventListener('submit', async (e) => {
-  e.preventDefault();
-  editRoleMsg.classList.add('hidden');
-  editRoleMsg.textContent = '';
-
-  const id = editRoleIdInput.value;
-  const name = editRoleNameInput.value.trim();
-
-  if (!id) {
-    editRoleMsg.textContent = 'Seleccioná un rol desde la lista para editar';
-    editRoleMsg.classList.remove('hidden');
-    editRoleMsg.classList.add('text-red-500');
+async function cargarPerfil() {
+  const token = localStorage.getItem('token');
+  if (!token) {
+    messageEl.textContent = 'No estás logueado. Redirigiendo al login...';
+    messageEl.classList.remove('hidden');
+    setTimeout(() => window.location.href = '/login.html', 1500);
     return;
   }
 
   try {
-    const res = await fetch(`/api/roles/${id}`, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: 'Bearer ' + token
-      },
-      body: JSON.stringify({ name })
+    const res = await fetch('/api/auth/me', {
+      headers: { Authorization: `Bearer ${token}` }
     });
-
     const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Error al cargar perfil');
 
-    if (!res.ok) {
-      throw new Error(data.error || 'No se pudo actualizar el rol');
+    // Actualizar perfil
+    document.getElementById('perfil-nombre').textContent = data.nombre;
+    document.getElementById('perfil-apellido').textContent = data.apellido;
+    document.getElementById('perfil-email').textContent = data.email;
+    document.getElementById('perfil-telefono').textContent = data.telefono || '-';
+    document.getElementById('perfil-disponibilidad').textContent = data.disponibilidad || '-';
+    document.getElementById('perfil-area').textContent = data.area;
+    document.getElementById('perfil-tipoPersona').textContent = data.tipo_persona;
+
+    // Mostrar botón "Ver usuarios" solo si es ADMIN/COORDINADOR
+    if (data.tipo_persona === 'ADMIN' || data.tipo_persona === 'COORDINADOR') {
+      verUsuariosBtn.classList.remove('hidden');
     }
-
-    editRoleMsg.textContent = 'Rol actualizado correctamente';
-    editRoleMsg.classList.remove('hidden');
-    editRoleMsg.classList.remove('text-red-500');
-    editRoleMsg.classList.add('text-emerald-600');
-
-    cargarRoles();
   } catch (err) {
-    editRoleMsg.textContent = err.message;
-    editRoleMsg.classList.remove('hidden');
-    editRoleMsg.classList.remove('text-emerald-600');
-    editRoleMsg.classList.add('text-red-500');
-  }
-});
-
-// Eliminar rol
-async function eliminarRol(id, name) {
-  const confirmar = window.confirm(`¿Seguro que querés eliminar el rol "${name}"?`);
-  if (!confirmar) return;
-
-  try {
-    const res = await fetch(`/api/roles/${id}`, {
-      method: 'DELETE',
-      headers: { Authorization: 'Bearer ' + token }
-    });
-
-    if (!res.ok && res.status !== 204) {
-      const data = await res.json();
-      throw new Error(data.error || 'No se pudo eliminar el rol');
-    }
-
-    cargarRoles();
-  } catch (err) {
-    alert(err.message);
+    messageEl.textContent = err.message;
+    messageEl.classList.remove('hidden');
   }
 }
 
-// ------- PERMISOS: CARGAR, CREAR, ELIMINAR -------
-
-async function cargarPermisos() {
+// Listar usuarios
+async function listarUsuarios() {
+  const token = localStorage.getItem('token');
   try {
-    const res = await fetch('/api/permissions', {
-      headers: { Authorization: 'Bearer ' + token }
+    const res = await fetch('/api/auth/users', {
+      headers: { Authorization: `Bearer ${token}` }
     });
-
     const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Error al listar usuarios');
 
-    if (!res.ok) {
-      throw new Error(data.error || 'No se pudieron cargar los permisos');
-    }
-
-    permissionsList.innerHTML = '';
-
-    data.forEach((permiso) => {
-      const li = document.createElement('li');
-      li.className = 'border rounded px-3 py-2 flex justify-between items-center';
-
-      const left = document.createElement('span');
-      left.textContent = permiso.code;
-
-      const deleteBtn = document.createElement('button');
-      deleteBtn.textContent = 'Eliminar';
-      deleteBtn.className = 'text-sm text-red-600 underline';
-      deleteBtn.addEventListener('click', () => {
-        eliminarPermiso(permiso.id, permiso.code);
-      });
-
-      li.appendChild(left);
-      li.appendChild(deleteBtn);
-      permissionsList.appendChild(li);
-    });
+    // Renderizar tabla de usuarios
+    usuariosContainer.innerHTML = `
+     <div class="overflow-x-auto">
+      <table class="min-w-full border mt-4 text-sm">
+      <thead class="bg-purple-100 text-purple-800">
+      <tr>
+      <th class="p-2 border">Nombre</th>
+      <th class="p-2 border">Apellido</th>
+      <th class="p-2 border">Email</th>
+      <th class="p-2 border">Tipo</th>
+      <th class="p-2 border">Área</th>
+      <th class="p-2 border">Teléfono</th>
+      <th class="p-2 border">Disponibilidad</th>
+      </tr>
+     </thead>
+  <tbody class="divide-y">
+          ${data.map(u => `
+            <tr>
+              <td class="p-2 border">${u.nombre}</td>
+              <td class="p-2 border">${u.apellido}</td>
+              <td class="p-2 border">${u.email}</td>
+              <td class="p-2 border">${u.tipo_persona}</td>
+              <td class="p-2 border">${u.area}</td>
+              <td class="p-2 border">${u.telefono || '-'}</td>
+              <td class="p-2 border">${u.disponibilidad || '-'}</td>
+            </tr>
+          `).join('')}
+        </tbody>
+      </table>
+      </div>
+    `;
   } catch (err) {
-    console.error(err);
+    usuariosContainer.innerHTML = `<p class="text-red-500">${err.message}</p>`;
   }
 }
 
-// Crear permiso
-createPermissionForm?.addEventListener('submit', async (e) => {
-  e.preventDefault();
-  createPermissionMsg.classList.add('hidden');
-  createPermissionMsg.textContent = '';
-
-  const nombre = newPermissionNameInput.value.trim();
-  if (!nombre) return;
-
-  try {
-    const res = await fetch('/api/permisos', {
-  method: 'POST',
-  headers: { 'Content-Type': 'application/json' },
-  body: JSON.stringify({
-    code: nombre,
-    description: ''
-  })
-});
-
-const data = await res.json();
-
-if (!res.ok) {
-  throw new Error(data.error || 'No se pudo crear el permiso');
-}
-
-    createPermissionMsg.textContent = 'Permiso creado correctamente';
-    createPermissionMsg.classList.remove('hidden');
-    createPermissionMsg.classList.remove('text-red-500');
-    createPermissionMsg.classList.add('text-emerald-600');
-
-    newPermissionNameInput.value = '';
-    cargarPermisos();
-  } catch (err) {
-    createPermissionMsg.textContent = err.message;
-    createPermissionMsg.classList.remove('hidden');
-    createPermissionMsg.classList.remove('text-emerald-600');
-    createPermissionMsg.classList.add('text-red-500');
-  }
-});
-
-// Eliminar permiso
-async function eliminarPermiso(id, nombre) {
-  const confirmar = window.confirm(`¿Seguro que querés eliminar el permiso "${nombre}"?`);
-  if (!confirmar) return;
-
-  try {
-    const res = await fetch(`/api/permissions/${id}`, {
-      method: 'DELETE',
-      headers: { Authorization: 'Bearer ' + token }
-    });
-
-    if (!res.ok && res.status !== 204) {
-      const data = await res.json();
-      throw new Error(data.error || 'No se pudo eliminar el permiso');
-    }
-
-    cargarPermisos();
-  } catch (err) {
-    alert(err.message);
-  }
-}
-
-// ------- INICIO -------
-
-activarTab('roles');
-cargarRoles();
-cargarPermisos();
+// Eventos
+document.addEventListener('DOMContentLoaded', cargarPerfil);
+verUsuariosBtn.addEventListener('click', listarUsuarios);

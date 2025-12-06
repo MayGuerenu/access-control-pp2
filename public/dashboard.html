@@ -2,124 +2,101 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <title>Dashboard - Roles y Permisos</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard - La Casita San Pedro</title>
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="min-h-screen bg-slate-100">
-  <!-- Barra superior -->
-  <nav class="bg-white shadow p-4 flex justify-between items-center">
-    <h1 class="font-semibold text-lg">Panel de administración</h1>
-    <div>
-      <span id="userEmail" class="text-sm text-slate-600 mr-4"></span>
-      <button
-        id="logoutBtn"
-        class="text-sm text-red-600 underline"
-      >Cerrar sesión</button>
-    </div>
-  </nav>
+<body class="bg-gray-100 min-h-screen flex flex-col">
 
-  <main class="max-w-4xl mx-auto mt-8 space-y-6">
-    <!-- Pestañas -->
-    <div class="bg-white rounded-xl shadow p-1 flex gap-1">
-      <button
-        id="tabRoles"
-        class="flex-1 px-3 py-2 rounded-lg text-sm font-medium bg-slate-900 text-white"
-      >
-        Roles
+  <!-- Header con menú hamburguesa -->
+  <header class="bg-purple-700 text-white shadow">
+    <div class="max-w-6xl mx-auto flex justify-between items-center px-6 py-4">
+      <h1 class="text-xl font-bold">La Casita San Pedro</h1>
+
+      <!-- Botón hamburguesa (solo móvil) -->
+      <button id="menu-btn" class="md:hidden focus:outline-none">
+        <svg xmlns="http://www.w3.org/2000/svg" 
+             class="h-6 w-6 text-white" 
+             fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"/>
+        </svg>
       </button>
-      <button
-        id="tabPermisos"
-        class="flex-1 px-3 py-2 rounded-lg text-sm font-medium bg-slate-100 text-slate-700"
-      >
-        Permisos
+
+      <!-- Navegación desktop -->
+      <nav class="hidden md:flex space-x-6">
+        <a href="/dashboard.html" class="hover:underline">Dashboard</a>
+        <a href="/register.html" class="hover:underline">Registro</a>
+        <a href="/login.html" class="hover:underline">Salir</a>
+      </nav>
+    </div>
+
+    <!-- Navegación móvil con transición -->
+    <nav id="mobile-menu" 
+         class="max-h-0 overflow-hidden transition-all duration-300 ease-in-out flex flex-col bg-purple-600 md:hidden px-6 space-y-2">
+      <a href="/dashboard.html" class="block py-2 hover:underline">Dashboard</a>
+      <a href="/register.html" class="block py-2 hover:underline">Registro</a>
+      <a href="/login.html" class="block py-2 hover:underline">Salir</a>
+    </nav>
+  </header>
+
+  <!-- Contenido principal -->
+  <main class="flex-grow w-full max-w-4xl mx-auto bg-white shadow-lg rounded-lg p-6 md:p-8 mt-6">
+    <h2 class="text-2xl font-bold text-purple-700 mb-6">Mi Perfil</h2>
+
+    <!-- Perfil del usuario -->
+    <section id="perfil" class="bg-gray-50 border rounded p-4 space-y-2">
+      <p><strong>Nombre:</strong> <span id="perfil-nombre">-</span></p>
+      <p><strong>Apellido:</strong> <span id="perfil-apellido">-</span></p>
+      <p><strong>Email:</strong> <span id="perfil-email">-</span></p>
+      <p><strong>Teléfono:</strong> <span id="perfil-telefono">-</span></p>
+      <p><strong>Disponibilidad:</strong> <span id="perfil-disponibilidad">-</span></p>
+      <p><strong>Área:</strong> <span id="perfil-area">-</span></p>
+      <p><strong>Tipo de persona:</strong> <span id="perfil-tipoPersona">-</span></p>
+    </section>
+
+    <!-- Mensajes -->
+    <p id="message" class="hidden text-center text-sm mt-4"></p>
+
+    <!-- Botón solo visible para ADMIN/COORDINADOR -->
+    <button id="ver-usuarios-btn"
+            class="hidden bg-purple-600 text-white py-2 px-4 rounded mt-6 hover:bg-purple-700 transition">
+      Ver usuarios
+    </button>
+
+    <!-- Contenedor para la tabla de usuarios -->
+    <div id="usuarios-container" class="mt-6"></div>
+
+    <!-- Botón editar perfil -->
+    <button id="editar-perfil-btn"
+            class="bg-purple-600 text-white py-2 px-4 rounded mt-6 hover:bg-purple-700 transition">
+      Editar perfil
+    </button>
+
+    <!-- Formulario edición perfil -->
+    <form id="editar-perfil-form" class="hidden mt-4 space-y-3">
+      <input id="edit-telefono" type="text" placeholder="Teléfono" class="w-full border rounded p-2" />
+      <input id="edit-disponibilidad" type="text" placeholder="Disponibilidad" class="w-full border rounded p-2" />
+      <input id="edit-area" type="text" placeholder="Área" class="w-full border rounded p-2" />
+      <button type="submit" class="bg-emerald-600 text-white py-2 px-4 rounded hover:bg-emerald-700 transition">
+        Guardar cambios
       </button>
-      <!-- si más adelante querés usuarios, agregamos otra pestaña acá -->
-    </div>
-
-    <!-- VISTA ROLES -->
-    <div id="view-roles" class="space-y-6">
-      <!-- Crear rol -->
-      <section class="bg-white rounded-xl shadow p-6">
-        <h2 class="text-lg font-semibold mb-3">Crear nuevo rol</h2>
-        <form id="createRoleForm" class="flex gap-3 flex-wrap items-center">
-          <input
-            type="text"
-            id="newRoleName"
-            placeholder="Nombre del rol"
-            class="border rounded px-3 py-2 flex-1 min-w-[200px]"
-            required
-          />
-          <button
-            type="submit"
-            class="bg-emerald-600 text-white rounded px-4 py-2 hover:bg-emerald-700 transition"
-          >
-            Crear
-          </button>
-        </form>
-        <p id="createRoleMsg" class="text-sm mt-2 hidden"></p>
-      </section>
-
-      <!-- Editar rol -->
-      <section class="bg-white rounded-xl shadow p-6">
-        <h2 class="text-lg font-semibold mb-3">Editar rol</h2>
-        <form id="editRoleForm" class="flex gap-3 flex-wrap items-center">
-          <input type="hidden" id="editRoleId" />
-          <input
-            type="text"
-            id="editRoleName"
-            placeholder="Seleccioná un rol para editar"
-            class="border rounded px-3 py-2 flex-1 min-w-[200px]"
-            required
-          />
-          <button
-            type="submit"
-            class="bg-blue-600 text-white rounded px-4 py-2 hover:bg-blue-700 transition"
-          >
-            Guardar cambios
-          </button>
-        </form>
-        <p class="text-xs text-slate-500 mt-1">
-          Tip: hacé clic en "Editar" en la lista para completar estos campos.
-        </p>
-        <p id="editRoleMsg" class="text-sm mt-2 hidden"></p>
-      </section>
-
-      <!-- Listado de roles -->
-      <section class="bg-white rounded-xl shadow p-6">
-        <h2 class="text-lg font-semibold mb-4">Roles registrados</h2>
-        <p id="error" class="text-red-500 text-sm mb-2 hidden"></p>
-        <ul id="rolesList" class="space-y-2"></ul>
-      </section>
-    </div>
-
-    <!-- VISTA PERMISOS -->
-    <div id="view-permissions" class="space-y-6 hidden">
-      <section class="bg-white rounded-xl shadow p-6">
-        <h2 class="text-lg font-semibold mb-3">Permisos</h2>
-
-        <form id="createPermissionForm" class="flex gap-3 flex-wrap items-center mb-4">
-          <input
-            type="text"
-            id="newPermissionName"
-            placeholder="Nombre del permiso (ej: ver_usuarios)"
-            class="border rounded px-3 py-2 flex-1 min-w-[200px]"
-            required
-          />
-          <button
-            type="submit"
-            class="bg-emerald-600 text-white rounded px-4 py-2 hover:bg-emerald-700 transition"
-          >
-            Crear permiso
-          </button>
-        </form>
-
-        <p id="createPermissionMsg" class="text-sm mb-3 hidden"></p>
-
-        <ul id="permissionsList" class="space-y-2"></ul>
-      </section>
-    </div>
+    </form>
   </main>
 
-  <script src="/js/dashboard.js"></script>
+  <!-- Footer con redes sociales -->
+  <footer class="bg-gray-800 text-gray-200 py-6 mt-6">
+    <div class="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center px-6 gap-4">
+      <p class="text-sm text-center md:text-left">
+        © 2025 La Casita San Pedro — Todos los derechos reservados
+      </p>
+      <div class="flex space-x-4">
+        <a href="https://www.facebook.com" target="_blank" class="hover:text-white transition">Facebook</a>
+        <a href="https://www.instagram.com" target="_blank" class="hover:text-white transition">Instagram</a>
+        <a href="https://wa.me/5491112345678" target="_blank" class="hover:text-white transition">WhatsApp</a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="dashboard.js"></script>
 </body>
 </html>
